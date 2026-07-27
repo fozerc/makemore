@@ -1,5 +1,6 @@
 import torch
 import matplotlib.pyplot as plt
+import torch.nn.functional as F
 
 words = open('names.txt', 'r').read().splitlines()
 
@@ -72,3 +73,7 @@ for w in words:
 
 xs = torch.tensor(xs)
 ys = torch.tensor(ys)
+
+
+xenc = F.one_hot(xs, num_classes=27).float()
+W = torch.randn(27, 27)
