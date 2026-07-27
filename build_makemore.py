@@ -55,5 +55,4 @@ for w in words:
         n += 1
 
 nll = -log_likelihood
-print(nll)
 print(nll/n)
