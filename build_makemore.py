@@ -17,21 +17,21 @@ for w in words:
         ix2 = stoi[ch2]
         N[ix1, ix2] += 1
 
-# plt.figure(figsize=(16,16))
-# plt.imshow(N, cmap='Reds')
-# for i in range(27):
-#     for j in range(27):
-#         chstr = itos[i] + itos[j]
-#         plt.text(j, i, chstr, ha='center', va='bottom', color='grey')
-#         plt.text(j, i, N[i, j].item(), ha='center', va='top', color='grey')
-# plt.axis('off')
-# plt.show()
+plt.figure(figsize=(16,16))
+plt.imshow(N, cmap='Reds')
+for i in range(27):
+    for j in range(27):
+        chstr = itos[i] + itos[j]
+        plt.text(j, i, chstr, ha='center', va='bottom', color='grey')
+        plt.text(j, i, N[i, j].item(), ha='center', va='top', color='grey')
+plt.axis('off')
+plt.show()
 
-P = (N+1).float()
+P = (N+10).float()
 P = P / P.sum(1, keepdim=True)
 
 g = torch.Generator().manual_seed(2147483647)
-for i in range(50):
+for i in range(200):
     out = []
     ix = 0
     while True:
@@ -74,6 +74,8 @@ for w in words:
 xs = torch.tensor(xs)
 ys = torch.tensor(ys)
 
-
+W = torch.randn((27, 27), generator=g)
 xenc = F.one_hot(xs, num_classes=27).float()
-W = torch.randn(27, 27)
+logits = xenc @ W
+counts = logits.exp()
+probs = counts / counts.sum(1, keepdim=True)
