@@ -74,6 +74,7 @@ for w in words:
 xs = torch.tensor(xs)
 ys = torch.tensor(ys)
 
+
 W = torch.randn((27, 27), generator=g)
 xenc = F.one_hot(xs, num_classes=27).float()
 logits = xenc @ W
