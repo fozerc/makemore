@@ -80,3 +80,5 @@ xenc = F.one_hot(xs, num_classes=27).float()
 logits = xenc @ W
 counts = logits.exp()
 probs = counts / counts.sum(1, keepdim=True)
+
+
