@@ -75,10 +75,15 @@ xs = torch.tensor(xs)
 ys = torch.tensor(ys)
 
 
-W = torch.randn((27, 27), generator=g)
+W = torch.randn((27, 27), generator=g, requires_grad=True)
+#forward pass
 xenc = F.one_hot(xs, num_classes=27).float()
 logits = xenc @ W
 counts = logits.exp()
 probs = counts / counts.sum(1, keepdim=True)
+loss = -probs[torch.arange(5), ys].log().mean()
 
-
+#backward pass
+W.grad = None
+loss.backward()
+W.data += -0.1 * W.grad
