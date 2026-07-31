@@ -86,19 +86,19 @@ loss = -probs[torch.arange(num), ys].log().mean()
 
 #backward pass
 for k in range(200):
-logits = xenc @ W
-counts = logits.exp()
-probs = counts / counts.sum(1, keepdim=True)
+    logits = xenc @ W
+    counts = logits.exp()
+    probs = counts / counts.sum(1, keepdim=True)
 
-loss = -probs[torch.arange(num), ys].log().mean()
-loss = loss + 0.01 * (W ** 2).mean()
+    loss = -probs[torch.arange(num), ys].log().mean()
+    loss = loss + 0.01 * (W ** 2).mean()
 
-W.grad = None
-loss.backward()
+    W.grad = None
+    loss.backward()
 
-W.data += -50 * W.grad
+    W.data += -50 * W.grad
 
-if k % 40 == 0:
+    if k % 40 == 0:
     print(f'шаг {k:3d}   loss = {loss.item():.4f}')
 
 print(f'loss = {loss.item():.4f}')
