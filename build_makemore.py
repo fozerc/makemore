@@ -99,7 +99,7 @@ for k in range(200):
     W.data += -50 * W.grad
 
     if k % 40 == 0:
-    print(f'шаг {k:3d}   loss = {loss.item():.4f}')
+        print(f'шаг {k:3d}   loss = {loss.item():.4f}')
 
 print(f'loss = {loss.item():.4f}')
 
