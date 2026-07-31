@@ -81,18 +81,33 @@ xenc = F.one_hot(xs, num_classes=27).float()
 logits = xenc @ W
 counts = logits.exp()
 probs = counts / counts.sum(1, keepdim=True)
-loss = -probs[torch.arange(5), ys].log().mean()
+num = xs.nelement()
+loss = -probs[torch.arange(num), ys].log().mean()
 
 #backward pass
+for k in range(200):
+logits = xenc @ W
+counts = logits.exp()
+probs = counts / counts.sum(1, keepdim=True)
+
+loss = -probs[torch.arange(num), ys].log().mean()
+loss = loss + 0.01 * (W ** 2).mean()
+
 W.grad = None
 loss.backward()
-W.data += -0.1 * W.grad
+
+W.data += -50 * W.grad
+
+if k % 40 == 0:
+    print(f'шаг {k:3d}   loss = {loss.item():.4f}')
+
+print(f'loss = {loss.item():.4f}')
 
 for i in range(5):
     out = []
     ix = 0
     while True:
-        xenc = F.one_hot(torch.tensor(ix), num_classes=27).float()
+        xenc = F.one_hot(torch.tensor([ix]), num_classes=27).float()
         logits = xenc @ W
         counts = logits.exp()
         p = counts / counts.sum(1, keepdim=True)
