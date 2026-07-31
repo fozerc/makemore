@@ -87,3 +87,18 @@ loss = -probs[torch.arange(5), ys].log().mean()
 W.grad = None
 loss.backward()
 W.data += -0.1 * W.grad
+
+for i in range(5):
+    out = []
+    ix = 0
+    while True:
+        xenc = F.one_hot(torch.tensor(ix), num_classes=27).float()
+        logits = xenc @ W
+        counts = logits.exp()
+        p = counts / counts.sum(1, keepdim=True)
+
+        ix = torch.multinomial(p, num_samples=1, replacement=True, generator=g).item()
+        out.append(itos[ix])
+        if ix == 0:
+            break
+    print(''.join(out))
