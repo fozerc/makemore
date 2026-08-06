@@ -27,4 +27,3 @@ print(X.shape, Y.shape)
 
 C = torch.randn(27, 2)
 emb = C[X]
-print(emb.shape)
