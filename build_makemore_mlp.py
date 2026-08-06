@@ -25,5 +25,17 @@ X = torch.tensor(X)
 Y = torch.tensor(Y)
 print(X.shape, Y.shape)
 
-C = torch.randn(27, 2)
+g = torch.Generator().manual_seed(2147483647)
+C = torch.randn((27, 2), generator=g)
+W1 = torch.randn((6, 100), generator=g)
+b1 = torch.randn((100), generator=g)
+W2 = torch.randn((100, 27), generator=g)
+b2 = torch.randn((27), generator=g)
+parameters = [C, W1, W2, b1, b2]
+
 emb = C[X]
+h = torch.tanh(emb.view(-1, 6) @ W1 + b1)
+logits = h @ W2 + b2
+counts = logits.exp()
+prob = counts / counts.sum(1, keepdim=True)
+loss = -prob[torch.arange(32), Y].log().mean()
