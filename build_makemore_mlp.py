@@ -12,13 +12,13 @@ itos = {i:s for s,i in stoi.items()}
 block_size = 3
 X, Y = [], []
 
-for w in words[:5]:
+for w in words:
     context = [0] * block_size
     for ch in w + '.':
         ix = stoi[ch]
         X.append(context)
         Y.append(ix)
-        print(''.join(itos[i] for i in context), '--->', itos[ix])
+        # print(''.join(itos[i] for i in context), '--->', itos[ix])
         context = context[1:] + [ix]
 
 X = torch.tensor(X)
@@ -33,9 +33,23 @@ W2 = torch.randn((100, 27), generator=g)
 b2 = torch.randn((27), generator=g)
 parameters = [C, W1, W2, b1, b2]
 
-emb = C[X]
-h = torch.tanh(emb.view(-1, 6) @ W1 + b1)
-logits = h @ W2 + b2
-counts = logits.exp()
-prob = counts / counts.sum(1, keepdim=True)
-loss = -prob[torch.arange(32), Y].log().mean()
+
+# counts = logits.exp()
+# prob = counts / counts.sum(1, keepdim=True)
+# loss = -prob[torch.arange(32), Y].log().mean()
+
+for p in parameters:
+    p.requires_grad_(True)
+
+for _ in range(100):
+    emb = C[X]
+    h = torch.tanh(emb.view(-1, 6) @ W1 + b1)
+    logits = h @ W2 + b2
+    loss = F.cross_entropy(logits, Y)
+    print(loss.item())
+    for p in parameters:
+        p.grad = None
+    loss.backward()
+    for p in parameters:
+        p.data += -0.1 * p.grad
+
