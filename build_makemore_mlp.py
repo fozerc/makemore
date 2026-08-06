@@ -38,10 +38,15 @@ parameters = [C, W1, W2, b1, b2]
 # prob = counts / counts.sum(1, keepdim=True)
 # loss = -prob[torch.arange(32), Y].log().mean()
 
+lre = torch.linspace(-3, 0, 1000)
+lrs = 10**lre
+lri = []
+lossi = []
+
 for p in parameters:
     p.requires_grad_(True)
 
-for _ in range(100):
+for i in range(1000 ):
     ix = torch.randint(0, X.shape[0], (32,))
 
     emb = C[X[ix]]
@@ -54,6 +59,12 @@ for _ in range(100):
         p.grad = None
     loss.backward()
 
+    lr = lrs[i]
     for p in parameters:
-        p.data += -0.1 * p.grad
+        p.data += -lr * p.grad
 
+    lri.append(lre[i])
+    lossi.append(loss.item())
+
+plt.plot(lri, lossi)
+plt.show()
