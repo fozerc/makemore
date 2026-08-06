@@ -46,7 +46,7 @@ lossi = []
 for p in parameters:
     p.requires_grad_(True)
 
-for i in range(1000 ):
+for i in range(100):
     ix = torch.randint(0, X.shape[0], (32,))
 
     emb = C[X[ix]]
@@ -59,12 +59,14 @@ for i in range(1000 ):
         p.grad = None
     loss.backward()
 
-    lr = lrs[i]
+    lr = 0.1
     for p in parameters:
         p.data += -lr * p.grad
 
-    lri.append(lre[i])
-    lossi.append(loss.item())
+print(loss.item())
+    # tracking
+    # lri.append(lre[i])
+    # lossi.append(loss.item())
 
-plt.plot(lri, lossi)
-plt.show()
+# plt.plot(lri, lossi)
+# plt.show()
