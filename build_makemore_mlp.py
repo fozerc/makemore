@@ -42,14 +42,18 @@ for p in parameters:
     p.requires_grad_(True)
 
 for _ in range(100):
-    emb = C[X]
+    ix = torch.randint(0, X.shape[0], (32,))
+
+    emb = C[X[ix]]
     h = torch.tanh(emb.view(-1, 6) @ W1 + b1)
     logits = h @ W2 + b2
-    loss = F.cross_entropy(logits, Y)
+    loss = F.cross_entropy(logits, Y[ix])
     print(loss.item())
+
     for p in parameters:
         p.grad = None
     loss.backward()
+
     for p in parameters:
         p.data += -0.1 * p.grad
 
