@@ -1,6 +1,7 @@
 import torch
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
+import random
 
 words = open('names.txt', 'r').read().splitlines()
 
@@ -12,18 +13,43 @@ itos = {i:s for s,i in stoi.items()}
 block_size = 3
 X, Y = [], []
 
-for w in words:
-    context = [0] * block_size
-    for ch in w + '.':
-        ix = stoi[ch]
-        X.append(context)
-        Y.append(ix)
-        # print(''.join(itos[i] for i in context), '--->', itos[ix])
-        context = context[1:] + [ix]
+# for w in words:
+#     context = [0] * block_size
+#     for ch in w + '.':
+#         ix = stoi[ch]
+#         X.append(context)
+#         Y.append(ix)
+#         # print(''.join(itos[i] for i in context), '--->', itos[ix])
+#         context = context[1:] + [ix]
 
 X = torch.tensor(X)
 Y = torch.tensor(Y)
 print(X.shape, Y.shape)
+
+def build_dataset(words):
+    block_size = 3
+    X, Y = [], []
+    for w in words:
+
+        context = [0] * block_size
+        for ch in w + '.':
+            ix = stoi[ch]
+            X.append(context)
+            Y.append(ix)
+            context = context[1:] + [ix]
+
+    X = torch.tensor(X)
+    Y = torch.tensor(Y)
+    print(X.shape, Y.shape)
+    return X, Y
+
+random.seed(42)
+random.shuffle(words)
+n1 = int(0.8 * len(words))
+n2 = int(0.9 * len(words))
+Xtr, Ytr = build_dataset(words[:n1])
+Xdev, Ydev = build_dataset(words[n1:n2])
+Xte, Yte = build_dataset(words[n2:])
 
 g = torch.Generator().manual_seed(2147483647)
 C = torch.randn((27, 2), generator=g)
@@ -47,12 +73,12 @@ for p in parameters:
     p.requires_grad_(True)
 
 for i in range(100):
-    ix = torch.randint(0, X.shape[0], (32,))
+    ix = torch.randint(0, Xtr.shape[0], (32,))
 
-    emb = C[X[ix]]
+    emb = C[Xtr[ix]]
     h = torch.tanh(emb.view(-1, 6) @ W1 + b1)
     logits = h @ W2 + b2
-    loss = F.cross_entropy(logits, Y[ix])
+    loss = F.cross_entropy(logits, Ytr[ix])
     print(loss.item())
 
     for p in parameters:
@@ -63,6 +89,8 @@ for i in range(100):
     for p in parameters:
         p.data += -lr * p.grad
 
+
+
 # print(loss.item())
     # tracking
     # lri.append(lre[i])
@@ -70,3 +98,4 @@ for i in range(100):
 
 # plt.plot(lri, lossi)
 # plt.show()
+
