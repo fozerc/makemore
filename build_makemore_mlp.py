@@ -72,7 +72,7 @@ lossi = []
 for p in parameters:
     p.requires_grad_(True)
 
-for i in range(100):
+for i in range(10000):
     ix = torch.randint(0, Xtr.shape[0], (32,))
 
     emb = C[Xtr[ix]]
@@ -89,7 +89,10 @@ for i in range(100):
     for p in parameters:
         p.data += -lr * p.grad
 
-
+emb = C[xdev]
+h = torch.tanh(emb.view(-1, 6) @ W1 + b1)
+logits = h @ W2 + b2
+loss = F.cross_entropy(logits, Ydev)
 
 # print(loss.item())
     # tracking
