@@ -63,7 +63,7 @@ for i in range(100):
     for p in parameters:
         p.data += -lr * p.grad
 
-print(loss.item())
+# print(loss.item())
     # tracking
     # lri.append(lre[i])
     # lossi.append(loss.item())
